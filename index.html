@@ -77,19 +77,50 @@
         .clr-btn.active { display: flex; }
 
         /* Config Row */
-        .config-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; padding: 0 5px; }
-        .config-group { text-align: left; }
+        .config-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+            margin-bottom: 25px; 
+            padding: 0 5px;
+            gap: 15px;
+        }
+        .config-group { text-align: left; flex: 1; }
         .label-sm { font-size: 0.7rem; font-weight: 800; color: var(--text-gray); text-transform: uppercase; display: block; margin-bottom: 4px; }
         
-        .goal-wrapper { position: relative; width: 85px; }
+        /* Goal Wrapper Adjustment */
+        .goal-container { text-align: right; }
+        .goal-wrapper { 
+            position: relative; 
+            width: 90px; 
+            display: inline-block;
+        }
         .goal-input {
-            width: 100%; padding: 10px; padding-right: 25px; border: 2px solid var(--border); border-radius: 10px;
-            font-size: 1rem; font-weight: 800; text-align: center; outline: none;
-            background: #fff; color: var(--main) !important;
-            -webkit-appearance: none; -webkit-text-fill-color: var(--main) !important;
+            width: 100%; 
+            padding: 10px; 
+            padding-right: 28px; /* space for clr button */
+            border: 2px solid var(--border); 
+            border-radius: 10px;
+            font-size: 1.1rem; 
+            font-weight: 800; 
+            text-align: center; /* center typing */
+            outline: none;
+            background: #fff; 
+            color: var(--main) !important;
+            box-sizing: border-box;
+            -webkit-appearance: none; 
+            -webkit-text-fill-color: var(--main) !important;
         }
         .goal-input::placeholder { color: var(--placeholder); -webkit-text-fill-color: var(--placeholder); }
-        .goal-clr { right: 5px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; font-size: 8px; }
+        .goal-clr { 
+            right: 6px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            width: 16px; 
+            height: 16px; 
+            font-size: 8px; 
+            margin-top: 0;
+        }
 
         /* Speed Comparison */
         .speed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
@@ -155,7 +186,7 @@
             <span class="label-sm" id="lang-label">Detected: -</span>
             <span id="count-label" style="font-size: 1rem; font-weight: 800;">0 Words</span>
         </div>
-        <div class="config-group" style="text-align: right;">
+        <div class="goal-container">
             <span class="label-sm">Goal Time (sec)</span>
             <div class="goal-wrapper">
                 <input type="number" id="goal" class="goal-input" placeholder="60" oninput="run()">
