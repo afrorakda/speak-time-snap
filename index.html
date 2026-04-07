@@ -45,19 +45,20 @@
         /* Input Area */
         .script-wrapper {
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         textarea {
             width: 100%;
-            height: 200px;
-            padding: 15px;
+            height: 220px;
+            padding: 18px;
             padding-right: 40px;
             border: 2px solid var(--border);
             border-radius: var(--radius);
             background: var(--input-bg);
             font-size: 1.1rem;
             font-weight: 600;
+            line-height: 1.5;
             color: var(--main) !important;
             box-sizing: border-box;
             outline: none;
@@ -74,8 +75,8 @@
             top: 12px;
             background: #ddd;
             color: #fff;
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             border: none;
             font-size: 12px;
@@ -84,57 +85,62 @@
             display: none;
             align-items: center;
             justify-content: center;
+            z-index: 5;
         }
         .clr-btn.active { display: flex; }
 
-        /* Counter Label */
-        .counter-row {
+        /* Status Labels */
+        .status-row {
             display: flex;
             justify-content: space-between;
             padding: 0 5px;
             margin-bottom: 25px;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 800;
             color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* Speed Comparison Cards */
+        /* Speed Cards */
         .speed-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .speed-card {
             background: var(--input-bg);
-            border: 1px solid var(--border);
+            border: 2px solid #eee;
             border-radius: var(--radius);
             padding: 15px 5px;
-            text-align: center;
+            transition: all 0.2s;
         }
 
         .speed-card.highlight {
-            border: 2px solid var(--main);
+            border-color: var(--main);
             background: #fff;
         }
 
-        .speed-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; color: var(--text-gray); }
-        .time-val { font-size: 1.1rem; font-weight: 800; display: block; margin-bottom: 4px; }
-        .wpm-sub { font-size: 0.6rem; opacity: 0.6; }
+        .speed-label { font-size: 0.7rem; font-weight: 800; color: var(--text-gray); margin-bottom: 8px; display: block; }
+        .time-val { font-size: 1.2rem; font-weight: 800; display: block; margin-bottom: 4px; }
+        .rate-sub { font-size: 0.6rem; font-weight: 700; opacity: 0.5; }
 
-        /* Main Goal Result */
+        /* Main Result Display */
         .result-box {
             background: var(--main);
             color: #fff;
-            padding: 25px;
+            padding: 25px 15px;
             border-radius: var(--radius);
             margin-top: 10px;
+            cursor: pointer;
         }
-        .res-label { font-size: 0.8rem; font-weight: 700; opacity: 0.6; margin-bottom: 10px; display: block; }
-        .res-val { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+        .result-box:active { transform: scale(0.98); opacity: 0.9; }
+        .res-label { font-size: 0.8rem; font-weight: 700; opacity: 0.6; margin-bottom: 8px; display: block; }
+        .res-val { font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; }
 
-        /* Footer & Modal (Inherited) */
+        /* Footer & Modal */
         footer { margin-top: 60px; font-size: 12px; color: #777; line-height: 1.8; font-weight: 500; }
         footer a { color: inherit; text-decoration: underline; }
         .footer-btns { margin-top: 30px; }
@@ -158,44 +164,52 @@
             border-radius: var(--radius); text-align: left; position: relative;
         }
         .close-x { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; }
+        
+        #toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--main); color: #fff; padding: 12px 24px; border-radius: 20px;
+            font-size: 0.9rem; font-weight: 700; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000;
+        }
     </style>
 </head>
 <body>
+
+<div id="toast">Copied!</div>
 
 <div class="container">
     <h1>Speak Time Snap</h1>
     <p class="subtitle">Draft your script, snap the duration.</p>
 
     <div class="script-wrapper">
-        <textarea id="scriptIn" placeholder="Paste your script here..." oninput="calc()"></textarea>
+        <textarea id="scriptIn" placeholder="Paste your script here..." oninput="run()"></textarea>
         <button class="clr-btn" id="clrBtn" onclick="cls()">×</button>
     </div>
 
-    <div class="counter-row">
-        <span id="unitLabel">WORDS: 0</span>
-        <span id="langLabel">DETECTED: -</span>
+    <div class="status-row">
+        <span id="statCount">Words: 0</span>
+        <span id="statLang">Detected: -</span>
     </div>
 
     <div class="speed-grid">
         <div class="speed-card">
             <span class="speed-label">Slow</span>
-            <span class="time-val" id="time-slow">0:00</span>
-            <span class="wpm-sub" id="sub-slow">-</span>
+            <span class="time-val" id="t-slow">0:00</span>
+            <span class="rate-sub" id="r-slow">-</span>
         </div>
         <div class="speed-card highlight">
             <span class="speed-label">Normal</span>
-            <span class="time-val" id="time-mid">0:00</span>
-            <span class="wpm-sub" id="sub-mid">-</span>
+            <span class="time-val" id="t-mid">0:00</span>
+            <span class="rate-sub" id="r-mid">-</span>
         </div>
         <div class="speed-card">
             <span class="speed-label">Fast</span>
-            <span class="time-val" id="time-fast">0:00</span>
-            <span class="wpm-sub" id="sub-fast">-</span>
+            <span class="time-val" id="t-fast">0:00</span>
+            <span class="rate-sub" id="r-fast">-</span>
         </div>
     </div>
 
-    <div class="result-box">
-        <span class="res-label">Standard Duration</span>
+    <div class="result-box" onclick="cp()">
+        <span class="res-label">Estimated Duration (Standard)</span>
         <div class="res-val" id="mainRes">0m 00s</div>
     </div>
 
@@ -223,72 +237,83 @@
 <script>
     const scriptIn = document.getElementById('scriptIn');
     const clrBtn = document.getElementById('clrBtn');
-    
+    const toast = document.getElementById('toast');
+
     function cls() {
         scriptIn.value = '';
-        calc();
+        run();
         scriptIn.focus();
     }
 
-    function calc() {
+    function run() {
         const text = scriptIn.value.trim();
         clrBtn.classList.toggle('active', text.length > 0);
 
         if (!text) {
-            resetUI();
+            reset();
             return;
         }
 
-        // Language Detection: Check for space ratio
-        // If average word length is very high, it's likely non-space language (JP/CN)
+        // Logic: Smart Language Detection
+        // Count words (space-separated) and non-space characters
         const words = text.split(/\s+/).filter(w => w.length > 0);
         const charCount = text.replace(/\s/g, '').length;
-        const isEnglish = (charCount / (words.length || 1)) < 10;
+        
+        // Threshold: If character-to-word ratio is high, it's likely JP/CN
+        const isWestern = (charCount / (words.length || 1)) < 8;
 
-        document.getElementById('langLabel').innerText = isEnglish ? 'DETECTED: EN/Western' : 'DETECTED: JP/CN';
-        document.getElementById('unitLabel').innerText = isEnglish ? `WORDS: ${words.length}` : `CHARS: ${charCount}`;
+        const count = isWestern ? words.length : charCount;
+        const unit = isWestern ? 'wpm' : 'cpm';
+        
+        document.getElementById('statLang').innerText = isWestern ? 'Detected: Western' : 'Detected: Asian';
+        document.getElementById('statCount').innerText = (isWestern ? 'Words: ' : 'Chars: ') + count;
 
-        // Speed Config (Words Per Min or Chars Per Min)
-        // EN: Slow 110, Mid 140, Fast 170
-        // JP: Slow 250, Mid 320, Fast 400
-        const rates = isEnglish ? [110, 140, 170] : [250, 320, 400];
-        const count = isEnglish ? words.length : charCount;
-        const unit = isEnglish ? 'wpm' : 'cpm';
-
-        const times = rates.map(rate => (count / rate) * 60);
+        // Rate Presets (Western: 110/140/170 WPM, Asian: 250/320/400 CPM)
+        const rates = isWestern ? [110, 140, 170] : [250, 320, 400];
+        const times = rates.map(r => (count / r) * 60);
 
         updateCard('slow', times[0], rates[0], unit);
         updateCard('mid', times[1], rates[1], unit);
         updateCard('fast', times[2], rates[2], unit);
 
-        document.getElementById('mainRes').innerText = formatTime(times[1]);
+        document.getElementById('mainRes').innerText = formatLong(times[1]);
     }
 
     function updateCard(id, sec, rate, unit) {
-        document.getElementById(`time-${id}`).innerText = formatTimeBrief(sec);
-        document.getElementById(`sub-${id}`).innerText = `${rate}${unit}`;
+        document.getElementById(`t-${id}`).innerText = formatShort(sec);
+        document.getElementById(`r-${id}`).innerText = rate + unit;
     }
 
-    function formatTime(sec) {
+    function formatShort(sec) {
         const m = Math.floor(sec / 60);
         const s = Math.floor(sec % 60);
-        return `${m}m ${s.toString().padStart(2, '0')}s`;
+        return m + ':' + s.toString().padStart(2, '0');
     }
 
-    function formatTimeBrief(sec) {
+    function formatLong(sec) {
         const m = Math.floor(sec / 60);
         const s = Math.floor(sec % 60);
-        return `${m}:${s.toString().padStart(2, '0')}`;
+        return m + 'm ' + s.toString().padStart(2, '0') + 's';
     }
 
-    function resetUI() {
+    function reset() {
         ['slow', 'mid', 'fast'].forEach(id => {
-            document.getElementById(`time-${id}`).innerText = '0:00';
-            document.getElementById(`sub-${id}`).innerText = '-';
+            document.getElementById(`t-${id}`).innerText = '0:00';
+            document.getElementById(`r-${id}`).innerText = '-';
         });
         document.getElementById('mainRes').innerText = '0m 00s';
-        document.getElementById('unitLabel').innerText = 'WORDS: 0';
-        document.getElementById('langLabel').innerText = 'DETECTED: -';
+        document.getElementById('statCount').innerText = 'Words: 0';
+        document.getElementById('statLang').innerText = 'Detected: -';
+    }
+
+    async function cp() {
+        const val = document.getElementById('mainRes').innerText;
+        if (val === '0m 00s') return;
+        try {
+            await navigator.clipboard.writeText(val);
+            toast.style.opacity = '1';
+            setTimeout(() => toast.style.opacity = '0', 1500);
+        } catch (e) {}
     }
 
     function showM() { document.getElementById('modal').style.display = 'flex'; }
