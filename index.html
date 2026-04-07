@@ -18,6 +18,7 @@
             --radius: 15px;
             --text-gray: #666;
             --placeholder: #bbb;
+            --success: #2ecc71;
         }
 
         body {
@@ -42,23 +43,20 @@
         h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
         .subtitle { font-size: 1rem; color: var(--text-gray); font-weight: 600; margin-bottom: 30px; }
 
-        /* Input Area */
-        .script-wrapper {
-            position: relative;
-            margin-bottom: 15px;
-        }
+        /* Input Card */
+        .card { background: var(--input-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px; margin-bottom: 15px; }
+        .script-wrapper { position: relative; }
 
         textarea {
             width: 100%;
-            height: 220px;
-            padding: 18px;
+            height: 200px;
+            padding: 15px;
             padding-right: 40px;
             border: 2px solid var(--border);
             border-radius: var(--radius);
-            background: var(--input-bg);
+            background: #fff;
             font-size: 1.1rem;
             font-weight: 600;
-            line-height: 1.5;
             color: var(--main) !important;
             box-sizing: border-box;
             outline: none;
@@ -70,75 +68,43 @@
         textarea::placeholder { color: var(--placeholder); -webkit-text-fill-color: var(--placeholder); }
 
         .clr-btn {
-            position: absolute;
-            right: 12px;
-            top: 12px;
-            background: #ddd;
-            color: #fff;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            border: none;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
+            position: absolute; right: 10px; top: 10px;
+            background: #ddd; color: #fff; width: 22px; height: 22px;
+            border-radius: 50%; border: none; font-size: 10px; font-weight: 800;
+            cursor: pointer; display: none; align-items: center; justify-content: center;
         }
         .clr-btn.active { display: flex; }
 
-        /* Status Labels */
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0 5px;
-            margin-bottom: 25px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: var(--text-gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        /* Config Row */
+        .config-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 5px; }
+        .config-group { text-align: left; }
+        .label-sm { font-size: 0.7rem; font-weight: 800; color: var(--text-gray); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        
+        .goal-input {
+            width: 70px; padding: 10px; border: 2px solid var(--border); border-radius: 10px;
+            font-size: 1rem; font-weight: 800; text-align: center; outline: none;
+            -webkit-appearance: none; -webkit-text-fill-color: var(--main);
         }
 
-        /* Speed Cards */
-        .speed-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
+        /* Speed Comparison */
+        .speed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+        .speed-card { background: var(--input-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 5px; }
+        .speed-card.highlight { border: 2px solid var(--main); background: #fff; }
+        .speed-label { font-size: 0.65rem; font-weight: 800; color: var(--text-gray); margin-bottom: 6px; display: block; }
+        .time-sm { font-size: 1.1rem; font-weight: 800; display: block; }
+        .rate-v { font-size: 0.6rem; font-weight: 700; opacity: 0.5; }
 
-        .speed-card {
-            background: var(--input-bg);
-            border: 2px solid #eee;
-            border-radius: var(--radius);
-            padding: 15px 5px;
-            transition: all 0.2s;
-        }
-
-        .speed-card.highlight {
-            border-color: var(--main);
-            background: #fff;
-        }
-
-        .speed-label { font-size: 0.7rem; font-weight: 800; color: var(--text-gray); margin-bottom: 8px; display: block; }
-        .time-val { font-size: 1.2rem; font-weight: 800; display: block; margin-bottom: 4px; }
-        .rate-sub { font-size: 0.6rem; font-weight: 700; opacity: 0.5; }
-
-        /* Main Result Display */
+        /* Main Result Box */
         .result-box {
-            background: var(--main);
-            color: #fff;
-            padding: 25px 15px;
-            border-radius: var(--radius);
-            margin-top: 10px;
-            cursor: pointer;
+            background: var(--main); color: #fff; padding: 25px 15px;
+            border-radius: var(--radius); cursor: pointer; position: relative;
+            transition: background 0.2s, transform 0.1s;
         }
-        .result-box:active { transform: scale(0.98); opacity: 0.9; }
-        .res-label { font-size: 0.8rem; font-weight: 700; opacity: 0.6; margin-bottom: 8px; display: block; }
+        .result-box.copied { background: var(--success); }
+        .result-box:active { transform: scale(0.98); }
+        .res-label { font-size: 0.8rem; font-weight: 700; opacity: 0.6; margin-bottom: 10px; display: block; }
         .res-val { font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; }
+        .goal-status { font-size: 0.85rem; font-weight: 700; margin-top: 10px; opacity: 0.9; }
 
         /* Footer & Modal */
         footer { margin-top: 60px; font-size: 12px; color: #777; line-height: 1.8; font-weight: 500; }
@@ -164,53 +130,54 @@
             border-radius: var(--radius); text-align: left; position: relative;
         }
         .close-x { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; }
-        
-        #toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--main); color: #fff; padding: 12px 24px; border-radius: 20px;
-            font-size: 0.9rem; font-weight: 700; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000;
-        }
     </style>
 </head>
 <body>
-
-<div id="toast">Copied!</div>
 
 <div class="container">
     <h1>Speak Time Snap</h1>
     <p class="subtitle">Draft your script, snap the duration.</p>
 
-    <div class="script-wrapper">
-        <textarea id="scriptIn" placeholder="Paste your script here..." oninput="run()"></textarea>
-        <button class="clr-btn" id="clrBtn" onclick="cls()">×</button>
+    <div class="card">
+        <div class="script-wrapper">
+            <textarea id="script" placeholder="Paste your script here..." oninput="run()"></textarea>
+            <button class="clr-btn" id="clr" onclick="cls()">×</button>
+        </div>
     </div>
 
-    <div class="status-row">
-        <span id="statCount">Words: 0</span>
-        <span id="statLang">Detected: -</span>
+    <div class="config-row">
+        <div class="config-group">
+            <span class="label-sm" id="lang-label">Detected: -</span>
+            <span id="count-label" style="font-size: 1rem; font-weight: 800;">0 Words</span>
+        </div>
+        <div class="config-group" style="text-align: right;">
+            <span class="label-sm">Goal Time (sec)</span>
+            <input type="number" id="goal" class="goal-input" placeholder="60" oninput="run()">
+        </div>
     </div>
 
     <div class="speed-grid">
         <div class="speed-card">
             <span class="speed-label">Slow</span>
-            <span class="time-val" id="t-slow">0:00</span>
-            <span class="rate-sub" id="r-slow">-</span>
+            <span class="time-sm" id="t-slow">0:00</span>
+            <span class="rate-v" id="r-slow">-</span>
         </div>
         <div class="speed-card highlight">
             <span class="speed-label">Normal</span>
-            <span class="time-val" id="t-mid">0:00</span>
-            <span class="rate-sub" id="r-mid">-</span>
+            <span class="time-sm" id="t-mid">0:00</span>
+            <span class="rate-v" id="r-mid">-</span>
         </div>
         <div class="speed-card">
             <span class="speed-label">Fast</span>
-            <span class="time-val" id="t-fast">0:00</span>
-            <span class="rate-sub" id="r-fast">-</span>
+            <span class="time-sm" id="t-fast">0:00</span>
+            <span class="rate-v" id="r-fast">-</span>
         </div>
     </div>
 
-    <div class="result-box" onclick="cp()">
-        <span class="res-label">Estimated Duration (Standard)</span>
-        <div class="res-val" id="mainRes">0m 00s</div>
+    <div class="result-box" id="result-box" onclick="cp()">
+        <span class="res-label" id="res-label">Estimated Duration (Standard)</span>
+        <div class="res-val" id="res-val">0m 00s</div>
+        <div class="goal-status" id="goal-status">Set a goal to see diff</div>
     </div>
 
     <div class="footer-btns">
@@ -228,47 +195,40 @@
     <div class="modal-content" onclick="event.stopPropagation()">
         <span class="close-x" onclick="hideM()">×</span>
         <h3>📱 Install</h3>
-        <p>Add to your home screen.</p>
+        <p>Add to home screen.</p>
         <p>🍏 <strong>iPhone (Safari):</strong><br>Tap Share, then Add to Home Screen.</p>
         <p>🤖 <strong>Android (Chrome):</strong><br>Tap Menu (⋮), then Add to Home Screen.</p>
     </div>
 </div>
 
 <script>
-    const scriptIn = document.getElementById('scriptIn');
-    const clrBtn = document.getElementById('clrBtn');
-    const toast = document.getElementById('toast');
+    const scriptEl = document.getElementById('script');
+    const goalEl = document.getElementById('goal');
+    const resBox = document.getElementById('result-box');
+    const resVal = document.getElementById('res-val');
+    const resLabel = document.getElementById('res-label');
+    const goalStatus = document.getElementById('goal-status');
+    let isCopying = false;
 
-    function cls() {
-        scriptIn.value = '';
-        run();
-        scriptIn.focus();
-    }
+    function cls() { scriptEl.value = ''; run(); scriptEl.focus(); }
 
     function run() {
-        const text = scriptIn.value.trim();
-        clrBtn.classList.toggle('active', text.length > 0);
+        const text = scriptEl.value.trim();
+        document.getElementById('clr').classList.toggle('active', text.length > 0);
+        
+        if (!text) { resetUI(); return; }
 
-        if (!text) {
-            reset();
-            return;
-        }
-
-        // Logic: Smart Language Detection
-        // Count words (space-separated) and non-space characters
         const words = text.split(/\s+/).filter(w => w.length > 0);
-        const charCount = text.replace(/\s/g, '').length;
-        
-        // Threshold: If character-to-word ratio is high, it's likely JP/CN
-        const isWestern = (charCount / (words.length || 1)) < 8;
+        const chars = text.replace(/\s/g, '').length;
+        const isWestern = (chars / (words.length || 1)) < 8;
 
-        const count = isWestern ? words.length : charCount;
+        const count = isWestern ? words.length : chars;
         const unit = isWestern ? 'wpm' : 'cpm';
-        
-        document.getElementById('statLang').innerText = isWestern ? 'Detected: Western' : 'Detected: Asian';
-        document.getElementById('statCount').innerText = (isWestern ? 'Words: ' : 'Chars: ') + count;
+        const unitName = isWestern ? 'Words' : 'Chars';
 
-        // Rate Presets (Western: 110/140/170 WPM, Asian: 250/320/400 CPM)
+        document.getElementById('lang-label').innerText = isWestern ? 'Detected: Western' : 'Detected: Asian';
+        document.getElementById('count-label').innerText = `${count} ${unitName}`;
+
         const rates = isWestern ? [110, 140, 170] : [250, 320, 400];
         const times = rates.map(r => (count / r) * 60);
 
@@ -276,7 +236,19 @@
         updateCard('mid', times[1], rates[1], unit);
         updateCard('fast', times[2], rates[2], unit);
 
-        document.getElementById('mainRes').innerText = formatLong(times[1]);
+        resVal.innerText = formatLong(times[1]);
+
+        // Goal Calc
+        const goalSec = parseFloat(goalEl.value);
+        if (goalSec > 0) {
+            const idealCount = Math.round((goalSec / 60) * rates[1]);
+            const diff = count - idealCount;
+            if (diff > 0) goalStatus.innerText = `Too long: Remove ${diff} ${unitName.toLowerCase()}`;
+            else if (diff < 0) goalStatus.innerText = `Too short: Add ${Math.abs(diff)} ${unitName.toLowerCase()}`;
+            else goalStatus.innerText = `Perfect length!`;
+        } else {
+            goalStatus.innerText = `Set a goal to see diff`;
+        }
     }
 
     function updateCard(id, sec, rate, unit) {
@@ -284,36 +256,51 @@
         document.getElementById(`r-${id}`).innerText = rate + unit;
     }
 
-    function formatShort(sec) {
-        const m = Math.floor(sec / 60);
-        const s = Math.floor(sec % 60);
-        return m + ':' + s.toString().padStart(2, '0');
+    function formatShort(s) {
+        const min = Math.floor(s / 60);
+        const sec = Math.floor(s % 60);
+        return min + ':' + sec.toString().padStart(2, '0');
     }
 
-    function formatLong(sec) {
-        const m = Math.floor(sec / 60);
-        const s = Math.floor(sec % 60);
-        return m + 'm ' + s.toString().padStart(2, '0') + 's';
+    function formatLong(s) {
+        const min = Math.floor(s / 60);
+        const sec = Math.floor(s % 60);
+        return min + 'm ' + sec.toString().padStart(2, '0') + 's';
     }
 
-    function reset() {
+    function resetUI() {
         ['slow', 'mid', 'fast'].forEach(id => {
             document.getElementById(`t-${id}`).innerText = '0:00';
             document.getElementById(`r-${id}`).innerText = '-';
         });
-        document.getElementById('mainRes').innerText = '0m 00s';
-        document.getElementById('statCount').innerText = 'Words: 0';
-        document.getElementById('statLang').innerText = 'Detected: -';
+        resVal.innerText = '0m 00s';
+        goalStatus.innerText = 'Set a goal to see diff';
+        document.getElementById('count-label').innerText = '0 Words';
+        document.getElementById('lang-label').innerText = 'Detected: -';
     }
 
     async function cp() {
-        const val = document.getElementById('mainRes').innerText;
-        if (val === '0m 00s') return;
+        if (resVal.innerText === '0m 00s' || isCopying) return;
+        isCopying = true;
+
+        const report = `${document.getElementById('count-label').innerText} / Normal Speed / ${resVal.innerText}`;
+        
         try {
-            await navigator.clipboard.writeText(val);
-            toast.style.opacity = '1';
-            setTimeout(() => toast.style.opacity = '0', 1500);
-        } catch (e) {}
+            await navigator.clipboard.writeText(report);
+            const originalVal = resVal.innerText;
+            const originalLabel = resLabel.innerText;
+            
+            resBox.classList.add('copied');
+            resVal.innerText = 'Copied!';
+            resLabel.innerText = 'Report Saved to Clipboard';
+
+            setTimeout(() => {
+                resBox.classList.remove('copied');
+                resVal.innerText = originalVal;
+                resLabel.innerText = originalLabel;
+                isCopying = false;
+            }, 1500);
+        } catch (e) { isCopying = false; }
     }
 
     function showM() { document.getElementById('modal').style.display = 'flex'; }
