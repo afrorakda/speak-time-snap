@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Speak Time Snap - Fridge Combo</title>
+    
+    <link rel="icon" href="image_91.png">
+    <link rel="apple-touch-icon" href="image_91.png">
+
+    <style>
+        :root {
+            --main: #333;
+            --bg: #fff;
+            --accent: #eee;
+            --border: #ccc;
+            --input-bg: #fafafa;
+            --radius: 15px;
+            --text-gray: #666;
+            --placeholder: #bbb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
+        .subtitle { font-size: 1rem; color: var(--text-gray); font-weight: 600; margin-bottom: 30px; }
+
+        /* Input Area */
+        .script-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            padding-right: 40px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--input-bg);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--main) !important;
+            box-sizing: border-box;
+            outline: none;
+            resize: none;
+            -webkit-appearance: none;
+            -webkit-text-fill-color: var(--main) !important;
+            opacity: 1 !important;
+        }
+        textarea::placeholder { color: var(--placeholder); -webkit-text-fill-color: var(--placeholder); }
+
+        .clr-btn {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            background: #ddd;
+            color: #fff;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: none;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .clr-btn.active { display: flex; }
+
+        /* Counter Label */
+        .counter-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 5px;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-gray);
+        }
+
+        /* Speed Comparison Cards */
+        .speed-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .speed-card {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 15px 5px;
+            text-align: center;
+        }
+
+        .speed-card.highlight {
+            border: 2px solid var(--main);
+            background: #fff;
+        }
+
+        .speed-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; color: var(--text-gray); }
+        .time-val { font-size: 1.1rem; font-weight: 800; display: block; margin-bottom: 4px; }
+        .wpm-sub { font-size: 0.6rem; opacity: 0.6; }
+
+        /* Main Goal Result */
+        .result-box {
+            background: var(--main);
+            color: #fff;
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-top: 10px;
+        }
+        .res-label { font-size: 0.8rem; font-weight: 700; opacity: 0.6; margin-bottom: 10px; display: block; }
+        .res-val { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+
+        /* Footer & Modal (Inherited) */
+        footer { margin-top: 60px; font-size: 12px; color: #777; line-height: 1.8; font-weight: 500; }
+        footer a { color: inherit; text-decoration: underline; }
+        .footer-btns { margin-top: 30px; }
+        .kofi-btn {
+            display: inline-block; background: var(--main); color: #fff;
+            padding: 14px 28px; border-radius: var(--radius);
+            text-decoration: none; font-weight: bold; font-size: 15px; margin-bottom: 15px;
+        }
+        .home-btn {
+            display: block; width: 70%; margin: 0 auto; background: var(--accent);
+            color: var(--main); border: none; padding: 12px;
+            border-radius: var(--radius); font-weight: 800; font-size: 14px; cursor: pointer;
+        }
+
+        #modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100;
+        }
+        .modal-content {
+            background: #fff; width: 85%; max-width: 340px; padding: 35px;
+            border-radius: var(--radius); text-align: left; position: relative;
+        }
+        .close-x { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Speak Time Snap</h1>
+    <p class="subtitle">Draft your script, snap the duration.</p>
+
+    <div class="script-wrapper">
+        <textarea id="scriptIn" placeholder="Paste your script here..." oninput="calc()"></textarea>
+        <button class="clr-btn" id="clrBtn" onclick="cls()">×</button>
+    </div>
+
+    <div class="counter-row">
+        <span id="unitLabel">WORDS: 0</span>
+        <span id="langLabel">DETECTED: -</span>
+    </div>
+
+    <div class="speed-grid">
+        <div class="speed-card">
+            <span class="speed-label">Slow</span>
+            <span class="time-val" id="time-slow">0:00</span>
+            <span class="wpm-sub" id="sub-slow">-</span>
+        </div>
+        <div class="speed-card highlight">
+            <span class="speed-label">Normal</span>
+            <span class="time-val" id="time-mid">0:00</span>
+            <span class="wpm-sub" id="sub-mid">-</span>
+        </div>
+        <div class="speed-card">
+            <span class="speed-label">Fast</span>
+            <span class="time-val" id="time-fast">0:00</span>
+            <span class="wpm-sub" id="sub-fast">-</span>
+        </div>
+    </div>
+
+    <div class="result-box">
+        <span class="res-label">Standard Duration</span>
+        <div class="res-val" id="mainRes">0m 00s</div>
+    </div>
+
+    <div class="footer-btns">
+        <a href="https://ko-fi.com/afrorakda" target="_blank" class="kofi-btn">☕️buy me a coffee</a>
+        <button class="home-btn" onclick="showM()">Add to Home Screen</button>
+    </div>
+
+    <footer>
+        <div>No login / No tracking / No ads / Browser only</div>
+        <div><a href="https://afrorakda.com/privacy/">Privacy Policy</a> / afrorakda © 2026</div>
+    </footer>
+</div>
+
+<div id="modal" onclick="hideM()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="close-x" onclick="hideM()">×</span>
+        <h3>📱 Install</h3>
+        <p>Add to your home screen.</p>
+        <p>🍏 <strong>iPhone (Safari):</strong><br>Tap Share, then Add to Home Screen.</p>
+        <p>🤖 <strong>Android (Chrome):</strong><br>Tap Menu (⋮), then Add to Home Screen.</p>
+    </div>
+</div>
+
+<script>
+    const scriptIn = document.getElementById('scriptIn');
+    const clrBtn = document.getElementById('clrBtn');
+    
+    function cls() {
+        scriptIn.value = '';
+        calc();
+        scriptIn.focus();
+    }
+
+    function calc() {
+        const text = scriptIn.value.trim();
+        clrBtn.classList.toggle('active', text.length > 0);
+
+        if (!text) {
+            resetUI();
+            return;
+        }
+
+        // Language Detection: Check for space ratio
+        // If average word length is very high, it's likely non-space language (JP/CN)
+        const words = text.split(/\s+/).filter(w => w.length > 0);
+        const charCount = text.replace(/\s/g, '').length;
+        const isEnglish = (charCount / (words.length || 1)) < 10;
+
+        document.getElementById('langLabel').innerText = isEnglish ? 'DETECTED: EN/Western' : 'DETECTED: JP/CN';
+        document.getElementById('unitLabel').innerText = isEnglish ? `WORDS: ${words.length}` : `CHARS: ${charCount}`;
+
+        // Speed Config (Words Per Min or Chars Per Min)
+        // EN: Slow 110, Mid 140, Fast 170
+        // JP: Slow 250, Mid 320, Fast 400
+        const rates = isEnglish ? [110, 140, 170] : [250, 320, 400];
+        const count = isEnglish ? words.length : charCount;
+        const unit = isEnglish ? 'wpm' : 'cpm';
+
+        const times = rates.map(rate => (count / rate) * 60);
+
+        updateCard('slow', times[0], rates[0], unit);
+        updateCard('mid', times[1], rates[1], unit);
+        updateCard('fast', times[2], rates[2], unit);
+
+        document.getElementById('mainRes').innerText = formatTime(times[1]);
+    }
+
+    function updateCard(id, sec, rate, unit) {
+        document.getElementById(`time-${id}`).innerText = formatTimeBrief(sec);
+        document.getElementById(`sub-${id}`).innerText = `${rate}${unit}`;
+    }
+
+    function formatTime(sec) {
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return `${m}m ${s.toString().padStart(2, '0')}s`;
+    }
+
+    function formatTimeBrief(sec) {
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function resetUI() {
+        ['slow', 'mid', 'fast'].forEach(id => {
+            document.getElementById(`time-${id}`).innerText = '0:00';
+            document.getElementById(`sub-${id}`).innerText = '-';
+        });
+        document.getElementById('mainRes').innerText = '0m 00s';
+        document.getElementById('unitLabel').innerText = 'WORDS: 0';
+        document.getElementById('langLabel').innerText = 'DETECTED: -';
+    }
+
+    function showM() { document.getElementById('modal').style.display = 'flex'; }
+    function hideM() { document.getElementById('modal').style.display = 'none'; }
+</script>
+
+</body>
+</html>
