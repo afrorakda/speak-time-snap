@@ -72,19 +72,24 @@
             background: #ddd; color: #fff; width: 22px; height: 22px;
             border-radius: 50%; border: none; font-size: 10px; font-weight: 800;
             cursor: pointer; display: none; align-items: center; justify-content: center;
+            z-index: 5;
         }
         .clr-btn.active { display: flex; }
 
         /* Config Row */
-        .config-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 5px; }
+        .config-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; padding: 0 5px; }
         .config-group { text-align: left; }
         .label-sm { font-size: 0.7rem; font-weight: 800; color: var(--text-gray); text-transform: uppercase; display: block; margin-bottom: 4px; }
         
+        .goal-wrapper { position: relative; width: 85px; }
         .goal-input {
-            width: 70px; padding: 10px; border: 2px solid var(--border); border-radius: 10px;
+            width: 100%; padding: 10px; padding-right: 25px; border: 2px solid var(--border); border-radius: 10px;
             font-size: 1rem; font-weight: 800; text-align: center; outline: none;
-            -webkit-appearance: none; -webkit-text-fill-color: var(--main);
+            background: #fff; color: var(--main) !important;
+            -webkit-appearance: none; -webkit-text-fill-color: var(--main) !important;
         }
+        .goal-input::placeholder { color: var(--placeholder); -webkit-text-fill-color: var(--placeholder); }
+        .goal-clr { right: 5px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; font-size: 8px; }
 
         /* Speed Comparison */
         .speed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
@@ -92,7 +97,7 @@
         .speed-card.highlight { border: 2px solid var(--main); background: #fff; }
         .speed-label { font-size: 0.65rem; font-weight: 800; color: var(--text-gray); margin-bottom: 6px; display: block; }
         .time-sm { font-size: 1.1rem; font-weight: 800; display: block; }
-        .rate-v { font-size: 0.6rem; font-weight: 700; opacity: 0.5; }
+        .rate-v { font-size: 0.55rem; font-weight: 700; color: var(--text-gray); opacity: 0.7; margin-top: 2px; display: block; }
 
         /* Main Result Box */
         .result-box {
@@ -141,7 +146,7 @@
     <div class="card">
         <div class="script-wrapper">
             <textarea id="script" placeholder="Paste your script here..." oninput="run()"></textarea>
-            <button class="clr-btn" id="clr" onclick="cls()">×</button>
+            <button class="clr-btn" id="clr" onclick="cls('script')">×</button>
         </div>
     </div>
 
@@ -152,7 +157,10 @@
         </div>
         <div class="config-group" style="text-align: right;">
             <span class="label-sm">Goal Time (sec)</span>
-            <input type="number" id="goal" class="goal-input" placeholder="60" oninput="run()">
+            <div class="goal-wrapper">
+                <input type="number" id="goal" class="goal-input" placeholder="60" oninput="run()">
+                <button class="clr-btn goal-clr" id="clr-goal" onclick="cls('goal')">×</button>
+            </div>
         </div>
     </div>
 
@@ -195,7 +203,7 @@
     <div class="modal-content" onclick="event.stopPropagation()">
         <span class="close-x" onclick="hideM()">×</span>
         <h3>📱 Install</h3>
-        <p>Add to home screen.</p>
+        <p>Add to your home screen.</p>
         <p>🍏 <strong>iPhone (Safari):</strong><br>Tap Share, then Add to Home Screen.</p>
         <p>🤖 <strong>Android (Chrome):</strong><br>Tap Menu (⋮), then Add to Home Screen.</p>
     </div>
@@ -209,12 +217,20 @@
     const resLabel = document.getElementById('res-label');
     const goalStatus = document.getElementById('goal-status');
     let isCopying = false;
+    let currentUnitName = "Words";
 
-    function cls() { scriptEl.value = ''; run(); scriptEl.focus(); }
+    function cls(id) { 
+        document.getElementById(id).value = ''; 
+        run(); 
+        document.getElementById(id).focus(); 
+    }
 
     function run() {
         const text = scriptEl.value.trim();
+        const goalVal = goalEl.value;
+
         document.getElementById('clr').classList.toggle('active', text.length > 0);
+        document.getElementById('clr-goal').classList.toggle('active', goalVal.length > 0);
         
         if (!text) { resetUI(); return; }
 
@@ -224,10 +240,10 @@
 
         const count = isWestern ? words.length : chars;
         const unit = isWestern ? 'wpm' : 'cpm';
-        const unitName = isWestern ? 'Words' : 'Chars';
+        currentUnitName = isWestern ? 'Words' : 'Chars';
 
         document.getElementById('lang-label').innerText = isWestern ? 'Detected: Western' : 'Detected: Asian';
-        document.getElementById('count-label').innerText = `${count} ${unitName}`;
+        document.getElementById('count-label').innerText = `${count} ${currentUnitName}`;
 
         const rates = isWestern ? [110, 140, 170] : [250, 320, 400];
         const times = rates.map(r => (count / r) * 60);
@@ -238,13 +254,13 @@
 
         resVal.innerText = formatLong(times[1]);
 
-        // Goal Calc
-        const goalSec = parseFloat(goalEl.value);
+        // Goal Logic
+        const goalSec = parseFloat(goalVal);
         if (goalSec > 0) {
             const idealCount = Math.round((goalSec / 60) * rates[1]);
             const diff = count - idealCount;
-            if (diff > 0) goalStatus.innerText = `Too long: Remove ${diff} ${unitName.toLowerCase()}`;
-            else if (diff < 0) goalStatus.innerText = `Too short: Add ${Math.abs(diff)} ${unitName.toLowerCase()}`;
+            if (diff > 0) goalStatus.innerText = `Too long: Remove ${diff} ${currentUnitName.toLowerCase()}`;
+            else if (diff < 0) goalStatus.innerText = `Too short: Add ${Math.abs(diff)} ${currentUnitName.toLowerCase()}`;
             else goalStatus.innerText = `Perfect length!`;
         } else {
             goalStatus.innerText = `Set a goal to see diff`;
@@ -253,7 +269,7 @@
 
     function updateCard(id, sec, rate, unit) {
         document.getElementById(`t-${id}`).innerText = formatShort(sec);
-        document.getElementById(`r-${id}`).innerText = rate + unit;
+        document.getElementById(`r-${id}`).innerText = rate + ' ' + unit;
     }
 
     function formatShort(s) {
